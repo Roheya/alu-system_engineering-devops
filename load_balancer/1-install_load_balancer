@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Install and configure HAProxy as a round-robin load balancer.
+
+set -e
+
+apt-get update -y
+apt-get install -y haproxy
+
+# Enable HAProxy for init-script management.
+if [ -f /etc/default/haproxy ]; then
+    if grep -q '^ENABLED=' /etc/default/haproxy; then
+        sed -i 's/^ENABLED=.*/ENABLED=1/' /etc/default/haproxy
+    else
+        echo 'ENABLED=1' >> /etc/default/haproxy
+    fi
+fi
+
+# Configure the frontend and backend.
+cat > /etc/haproxy/haproxy.cfg <<'EOF'
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    daemon
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+frontend http_front
+    bind *:80
+    default_backend web_backend
+
+backend web_backend
+    balance roundrobin
+    server 7413-web-01 18.132.38.113:80 check
+    server 7413-web-02 3.10.140.1:80 check
+EOF
+
+haproxy -c -f /etc/haproxy/haproxy.cfg
+service haproxy restart
