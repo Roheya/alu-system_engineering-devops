@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Configure Nginx to return the server hostname in an HTTP response header.
+
+# shellcheck disable=SC2154
+sed -i "/http {/a\    add_header X-Served-By \$hostname;" /etc/nginx/nginx.conf
+
+service nginx restart
