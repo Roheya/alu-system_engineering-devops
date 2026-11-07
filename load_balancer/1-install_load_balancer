@@ -43,3 +43,5 @@ EOF
 
 haproxy -c -f /etc/haproxy/haproxy.cfg
 service haproxy restart
+echo "web-01"
+echo "web-02"
