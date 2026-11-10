@@ -2,10 +2,6 @@
 # Configure HAProxy as a load balancer
 set -e
 
-# Display backend server names
-echo "web-01"
-echo "web-02"
-
 # Update package lists and install HAProxy
 apt-get update
 apt-get install -y haproxy
@@ -28,16 +24,14 @@ frontend http_front
 
 backend web_servers
     balance roundrobin
-    server web-01 18.132.38.113:80 check
-    server web-02 3.10.140.1:80 check
+    server web-01 web-01:80 check
+    server web-02 web-02:80 check
 EOF
 
 # Validate HAProxy configuration
 haproxy -c -f /etc/haproxy/haproxy.cfg
 
-# Enable HAProxy at startup
+# Enable and restart HAProxy
 systemctl enable haproxy
-
-# Restart HAProxy
 service haproxy restart
 
