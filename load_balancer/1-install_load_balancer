@@ -44,3 +44,12 @@ systemctl enable haproxy
 # Restart HAProxy
 service haproxy restart
 
+# Enable HAProxy at startup
+systemctl enable haproxy
+
+# Restart HAProxy
+service haproxy restart
+
+# Display configured backend servers
+echo "Configured backend: web-01"
+echo "Configured backend: web-02"
