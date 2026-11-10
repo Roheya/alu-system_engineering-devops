@@ -1,18 +1,10 @@
-
 #!/usr/bin/env bash
-# Configures a new Ubuntu machine with HAProxy as a load balancer
+# Configure HAProxy as a load balancer
 set -e
 
-# Update package lists
+# Update package lists and install HAProxy
 apt-get update
-
-# Install HAProxy
 apt-get install -y haproxy
-
-# Back up the default configuration if it exists
-if [ -f /etc/haproxy/haproxy.cfg ] && [ ! -f /etc/haproxy/haproxy.cfg.bak ]; then
-    cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
-fi
 
 # Configure HAProxy
 cat > /etc/haproxy/haproxy.cfg <<'EOF'
@@ -32,22 +24,18 @@ frontend http_front
 
 backend web_servers
     balance roundrobin
-    # Backend hosts: 7413-web-01 and 7413-web-02
+    # Backend servers: 7413-web-01 and 7413-web-02
     server web-01 18.132.38.113:80 check
     server web-02 3.10.140.1:80 check
+EOF
+
 # Validate HAProxy configuration
 haproxy -c -f /etc/haproxy/haproxy.cfg
 
 # Enable HAProxy at startup
 systemctl enable haproxy
 
-# Restart HAProxy
-service haproxy restart
-
-# Enable HAProxy at startup
-systemctl enable haproxy
-
-# Restart HAProxy
+# Restart HAProxy using its init service
 service haproxy restart
 
 # Display configured backend servers
