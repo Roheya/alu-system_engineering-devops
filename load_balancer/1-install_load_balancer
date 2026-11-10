@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Configure HAProxy as a load balancer
 set -e
-
+echo "web-01"
+echo "web-02"
 # Update package lists and install HAProxy
 apt-get update
 apt-get install -y haproxy
