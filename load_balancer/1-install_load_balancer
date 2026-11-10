@@ -39,4 +39,3 @@ systemctl enable haproxy
 # Restart HAProxy using the init service
 service haproxy restart
 
-set -e
