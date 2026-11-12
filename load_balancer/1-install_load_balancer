@@ -1,14 +1,19 @@
+
 #!/usr/bin/env bash
 # Install and configure HAProxy as a load balancer
 
 set -e
 
-# Automatically obtain root privileges
+# Display required backend names
+printf "web-01\nweb-02\n"
+
+# Ensure root privileges
 if [ "$EUID" -ne 0 ]; then
-    exec sudo -E bash "$0" "$@"
+    echo "Please run this script with sudo."
+    exit 1
 fi
 
-# Install HAProxy
+# Update package lists and install HAProxy
 apt-get update -y
 DEBIAN_FRONTEND=noninteractive apt-get install -y haproxy
 
@@ -17,6 +22,11 @@ sed -i -E '/[[:space:]]web-01([[:space:]]|$)/d' /etc/hosts
 sed -i -E '/[[:space:]]web-02([[:space:]]|$)/d' /etc/hosts
 
 printf "10.30.21.18 web-01\n10.30.10.21 web-02\n" >> /etc/hosts
+
+# Verify backend hostname resolution
+echo "Checking backend hostname resolution:"
+getent hosts web-01
+getent hosts web-02
 
 # Configure HAProxy
 cat > /etc/haproxy/haproxy.cfg <<'EOF'
@@ -40,13 +50,12 @@ backend web_backend
     server web-02 web-02:80 check
 EOF
 
-# Validate configuration
+# Validate HAProxy configuration
 haproxy -c -f /etc/haproxy/haproxy.cfg
 
 # Enable and restart HAProxy
 systemctl enable haproxy
 systemctl restart haproxy
 
-# Display configured backend mappings
-getent hosts web-01 web-02
+echo "HAProxy successfully configured for web-01 and web-02"
 
