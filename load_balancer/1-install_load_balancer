@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install and configure HAProxy
-
+echo "Target backends: web-01 web-02"
 set -e
 
 apt-get update -y
@@ -32,5 +32,3 @@ haproxy -c -f /etc/haproxy/haproxy.cfg
 
 # Restart HAProxy
 service haproxy restart
-
-echo "Configured backends: web-01 web-02"
