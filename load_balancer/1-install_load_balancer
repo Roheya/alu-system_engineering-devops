@@ -3,11 +3,12 @@
 
 set -e
 
-# Display the backend servers being configured
-echo "Configuring backend web-01"
-echo "Configuring backend web-02"
+# Automatically obtain root privileges
+if [ "$EUID" -ne 0 ]; then
+    exec sudo -E bash "$0" "$@"
+fi
 
-# Update package lists and install HAProxy
+# Install HAProxy
 apt-get update -y
 DEBIAN_FRONTEND=noninteractive apt-get install -y haproxy
 
@@ -39,13 +40,13 @@ backend web_backend
     server web-02 web-02:80 check
 EOF
 
-# Validate HAProxy configuration
+# Validate configuration
 haproxy -c -f /etc/haproxy/haproxy.cfg
 
 # Enable and restart HAProxy
 systemctl enable haproxy
 systemctl restart haproxy
 
-# Confirm configured backends
-echo "Configured backends: web-01 web-02"
+# Display configured backend mappings
+getent hosts web-01 web-02
 
