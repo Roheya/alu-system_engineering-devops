@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 # Install and configure HAProxy as a load balancer
 
-echo "Configuring HAProxy backends: web-01 web-02"
-
 set -e
 
-# Ensure the script runs with root privileges
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run this script with sudo."
-    exit 1
-fi
+# Display the backend servers being configured
+echo "Configuring backend web-01"
+echo "Configuring backend web-02"
 
 # Update package lists and install HAProxy
 apt-get update -y
@@ -50,5 +46,6 @@ haproxy -c -f /etc/haproxy/haproxy.cfg
 systemctl enable haproxy
 systemctl restart haproxy
 
-echo "HAProxy successfully configured with web-01 and web-02"
+# Confirm configured backends
+echo "Configured backends: web-01 web-02"
 
