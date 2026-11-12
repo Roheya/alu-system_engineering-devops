@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Install and configure HAProxy
 
-apt-get -y update
-apt-get -y install haproxy
+set -e
 
-cat > /etc/haproxy/haproxy.cfg <<EOF
+apt-get update -y
+apt-get install -y haproxy
+
+cat > /etc/haproxy/haproxy.cfg <<'EOF'
 global
     daemon
     maxconn 256
@@ -25,4 +27,10 @@ backend web_backend
     server web-02 web-02:80 check
 EOF
 
+# Validate HAProxy configuration
+haproxy -c -f /etc/haproxy/haproxy.cfg
+
+# Restart HAProxy
 service haproxy restart
+
+echo "Configured backends: web-01 web-02"
