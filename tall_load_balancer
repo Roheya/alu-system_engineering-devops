@@ -1,0 +1,53 @@
+[1mdiff --git a/load_balancer/1-install_load_balancer b/load_balancer/1-install_load_balancer[m
+[1mindex d51e110..b90c6ca 100755[m
+[1m--- a/load_balancer/1-install_load_balancer[m
+[1m+++ b/load_balancer/1-install_load_balancer[m
+[36m@@ -1,19 +1,11 @@[m
+[31m-[m
+ #!/usr/bin/env bash[m
+[31m-# Configures a new Ubuntu machine with HAProxy as a load balancer[m
+[32m+[m[32m# Configure HAProxy as a load balancer[m
+ set -e[m
+ [m
+[31m-# Update package lists[m
+[32m+[m[32m# Update package lists and install HAProxy[m
+ apt-get update[m
+[31m-[m
+[31m-# Install HAProxy[m
+ apt-get install -y haproxy[m
+ [m
+[31m-# Back up the default configuration if it exists[m
+[31m-if [ -f /etc/haproxy/haproxy.cfg ] && [ ! -f /etc/haproxy/haproxy.cfg.bak ]; then[m
+[31m-    cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak[m
+[31m-fi[m
+[31m-[m
+ # Configure HAProxy[m
+ cat > /etc/haproxy/haproxy.cfg <<'EOF'[m
+ global[m
+[36m@@ -32,22 +24,18 @@[m [mfrontend http_front[m
+ [m
+ backend web_servers[m
+     balance roundrobin[m
+[31m-    # Backend hosts: 7413-web-01 and 7413-web-02[m
+[32m+[m[32m    # Backend servers: 7413-web-01 and 7413-web-02[m
+     server web-01 18.132.38.113:80 check[m
+     server web-02 3.10.140.1:80 check[m
+[32m+[m[32mEOF[m
+[32m+[m
+ # Validate HAProxy configuration[m
+ haproxy -c -f /etc/haproxy/haproxy.cfg[m
+ [m
+ # Enable HAProxy at startup[m
+ systemctl enable haproxy[m
+ [m
+[31m-# Restart HAProxy[m
+[31m-service haproxy restart[m
+[31m-[m
+[31m-# Enable HAProxy at startup[m
+[31m-systemctl enable haproxy[m
+[31m-[m
+[31m-# Restart HAProxy[m
+[32m+[m[32m# Restart HAProxy using its init service[m
+ service haproxy restart[m
+ [m
+ # Display configured backend servers[m
