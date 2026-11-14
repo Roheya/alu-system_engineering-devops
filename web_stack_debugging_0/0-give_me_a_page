@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Start Apache and verify that it is running
 service apache2 start
 if service apache2 status >/dev/null 2>&1; then
     echo "apache2 is running"
