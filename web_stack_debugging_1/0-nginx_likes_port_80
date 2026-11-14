@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Enable the default Nginx site and restart Nginx
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+service nginx restart
