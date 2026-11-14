@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Run Nginx as the nginx user on port 8080
+id nginx >/dev/null 2>&1 || adduser --system --no-create-home --group --disabled-login nginx
+sed -i -e '/^[[:space:]]*user[[:space:]]/d' -e 's|^pid /run/nginx.pid;|pid /run/nginx/nginx.pid;|' /etc/nginx/nginx.conf
+sed -i -e 's/listen 80 default_server;/listen 8080 default_server;/' -e 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' /etc/nginx/sites-available/default
+mkdir -p /run/nginx
+chown -R nginx:nginx /run/nginx /var/log/nginx /var/lib/nginx
+pkill -x nginx 2>/dev/null || true
+su -s /bin/sh nginx -c '/usr/sbin/nginx'
