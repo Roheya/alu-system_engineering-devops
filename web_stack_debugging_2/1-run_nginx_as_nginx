@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
-# Run Nginx as the nginx user on port 8080
-pkill -f apache2 2>/dev/null || true
-id nginx >/dev/null 2>&1 || adduser --system --no-create-home --group --disabled-login nginx
-chmod 644 /etc/nginx/nginx.conf /etc/nginx/sites-available/default
-sed -i '/^[[:space:]]*user[[:space:]]/d' /etc/nginx/nginx.conf
-sed -i 's|pid /run/nginx.pid;|pid /run/nginx/nginx.pid;|' /etc/nginx/nginx.conf
-sed -i 's/listen 80 default_server;/listen 0.0.0.0:8080 default_server;/' /etc/nginx/sites-available/default
-sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' /etc/nginx/sites-available/default
-mkdir -p /run/nginx
-chown -R nginx:nginx /run/nginx /var/log/nginx /var/lib/nginx
-pkill -x nginx 2>/dev/null || true
-su -s /bin/sh nginx -c '/usr/sbin/nginx'
+# Configure and restart Nginx as the nginx user
+pkill apache2 2>/dev/null || true
+sed -i '/^[[:space:]]*user[[:space:]]/d; 1i user nginx;' /etc/nginx/nginx.conf
+sed -i 's/\<80\>/&80/' /etc/nginx/sites-available/default
+chmod 644 /etc/nginx/nginx.conf
+su -s /bin/sh nginx -c 'service nginx restart'
